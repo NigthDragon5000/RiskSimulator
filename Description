@@ -1,0 +1,6 @@
+separate training validatiopn
+Create k means for the sample
+Fit distribution to train
+Predict and validate to test (check  KS distance)
+check actual distribution and simulate
+
