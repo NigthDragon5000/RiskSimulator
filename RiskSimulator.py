@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Sep 13 12:13:17 2019
+
+@author: jcondori
+"""
+
 
 RANDOM_STATE = 31415
 import matplotlib.pyplot as plt
@@ -95,7 +102,7 @@ distributions=[
             #scipy.stats.recipinvgauss	,
             #scipy.stats.semicircular	,
             #scipy.stats.skewnorm	,
-            scipy.stats.t	,
+            #scipy.stats.t	,
             #scipy.stats.trapz	,
             #scipy.stats.triang	,
             #scipy.stats.truncexpon	,
@@ -149,7 +156,7 @@ def search_fit(data,distributions):
     dists=[]
     for dist in distributions:
         try:
-            d,pvalue=goodness_of_fit(data,dist,plot=False)
+            d,pvalue=goodness_of_fit(data,dist)
         except NotImplementedError:
             pass
         except KeyboardInterrupt:
@@ -161,15 +168,12 @@ def search_fit(data,distributions):
         dists.append(dist)
     return {'dists':dists,'pvalues':pvalues,'ds':ds}
 
-def best_distribution(data):
+def best_distribution(data,plot=False):
     base=search_fit(data,distributions)
     minpos = base['ds'].index(min(base['ds']))
     dist=base['dists'][minpos]
     #p=base['pvalues'][minpos]
-    params = dist.fit(data)
-    arg = params[:-2]
-    loc = params[-2]
-    scale = params[-1]
+    dist,loc,scale,arg=fit(data,dist,plot=True)
     return arg,loc,scale,dist#,p
 
 def simulation(n,arg,loc,scale,dist):
@@ -181,13 +185,3 @@ def simulation(n,arg,loc,scale,dist):
     return results
 
 
-search_fit(df2['pbi'],distributions)
-fit(df2['pbi'],scipy.stats.lognorm,plot=True)
-goodness_of_fit(df2['pbi'],scipy.stats.lognorm,plot=True)
-
-
-arg,loc,scale,dist=best_distribution(df2['pbi'])
-simulations=simulation(1000,arg=arg,loc=loc,scale=scale,dist=dist)
-simulations=pd.DataFrame(simulations)
-simulations.columns=['pbi_simulation']
-simulations.hist()
